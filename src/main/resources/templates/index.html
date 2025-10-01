@@ -106,42 +106,46 @@
     };
 
 
-    // for drowsiness detection
-
-    // Community Broadcast Board with localStorage
-let notes = JSON.parse(localStorage.getItem('ev-broadcast-notes') || '[]');
+   // Community Broadcast Board with backend API
 const form = document.getElementById('broadcastForm');
 const input = document.getElementById('broadcastInput');
 const list = document.getElementById('broadcastList');
 
-function renderNotes() {
-  list.innerHTML = notes.slice(-8).reverse().map((note, idx) =>
-    `<li class="broadcast-note">
-      <span class="note-text">${note}</span>
-      <button onclick="deleteNote(${notes.length-1-idx})" title="Delete" class="delete-btn" aria-label="Delete post">🗑️</button>
+async function fetchNotes() {
+  const res = await fetch('/api/broadcast');
+  const notes = await res.json();
+  renderNotes(notes);
+}
+
+function renderNotes(notes) {
+  list.innerHTML = notes.map(note =>
+    `<li class="broadcast-note" data-id="${note.id}">
+      <span class="note-text">${note.content}</span>
+      <button onclick="deleteNote(${note.id})" title="Delete" class="delete-btn" aria-label="Delete post">🗑️</button>
     </li>`
   ).join('');
 }
 
-form.onsubmit = e => {
+form.onsubmit = async e => {
   e.preventDefault();
   const val = input.value.trim();
   if (val) {
-    notes.push(val);
-    localStorage.setItem('ev-broadcast-notes', JSON.stringify(notes));
+    await fetch('/api/broadcast', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ content: val })
+    });
     input.value = '';
-    renderNotes();
+    fetchNotes();
   }
 };
 
-window.deleteNote = function(idx) {
-  notes.splice(idx, 1);
-  localStorage.setItem('ev-broadcast-notes', JSON.stringify(notes));
-  renderNotes();
+window.deleteNote = async function(id) {
+  await fetch(`/api/broadcast/${id}`, { method: 'DELETE' });
+  fetchNotes();
 };
 
-renderNotes();
-
+fetchNotes();
 
 </script>
 </body>
