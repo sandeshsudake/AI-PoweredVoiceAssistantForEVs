@@ -87,6 +87,9 @@
 
     <section class="broadcast-board">
         <h3>EV Community Broadcast Board</h3>
+
+        <div id="broadcastError" style="color:red; margin-bottom:10px;"></div>
+
         <form id="broadcastForm">
             <input type="text" id="broadcastInput" maxlength="120" placeholder="Share a quick update (e.g. charger status, traffic)..." autocomplete="off" />
             <button type="submit" id="broadcastPostBtn">Post</button>
@@ -107,14 +110,40 @@
 
 
    // Community Broadcast Board with backend API
+// Community Broadcast Board with backend API
 const form = document.getElementById('broadcastForm');
 const input = document.getElementById('broadcastInput');
 const list = document.getElementById('broadcastList');
+const errorDiv = document.getElementById('broadcastError');
+
+// Helper: fetch with timeout (default 5s)
+function fetchWithTimeout(resource, options = {}, timeout = 5000) {
+  return Promise.race([
+    fetch(resource, options),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timed out')), timeout)
+    )
+  ]);
+}
 
 async function fetchNotes() {
-  const res = await fetch('/api/broadcast');
-  const notes = await res.json();
-  renderNotes(notes);
+  errorDiv.textContent = '';
+  try {
+    const res = await fetchWithTimeout('/api/broadcast', {}, 5000);
+    if (!res.ok) {
+      const data = await res.json();
+      errorDiv.textContent = data.error || 'Error fetching posts.';
+      list.innerHTML = '';
+      return;
+    }
+    const notes = await res.json();
+    renderNotes(notes);
+  } catch (e) {
+    errorDiv.textContent = e.message === 'Request timed out'
+      ? 'Server is not responding. Please try again later.'
+      : 'Network error. Please try again later.';
+    list.innerHTML = '';
+  }
 }
 
 function renderNotes(notes) {
@@ -128,25 +157,48 @@ function renderNotes(notes) {
 
 form.onsubmit = async e => {
   e.preventDefault();
+  errorDiv.textContent = '';
   const val = input.value.trim();
   if (val) {
-    await fetch('/api/broadcast', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ content: val })
-    });
-    input.value = '';
-    fetchNotes();
+    try {
+      const res = await fetchWithTimeout('/api/broadcast', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ content: val })
+      }, 5000);
+      if (!res.ok) {
+        const data = await res.json();
+        errorDiv.textContent = data.error || 'Error adding post.';
+      } else {
+        input.value = '';
+        fetchNotes();
+      }
+    } catch (e) {
+      errorDiv.textContent = e.message === 'Request timed out'
+        ? 'Server is not responding. Please try again later.'
+        : 'Network error. Please try again later.';
+    }
   }
 };
 
 window.deleteNote = async function(id) {
-  await fetch(`/api/broadcast/${id}`, { method: 'DELETE' });
-  fetchNotes();
+  errorDiv.textContent = '';
+  try {
+    const res = await fetchWithTimeout(`/api/broadcast/${id}`, { method: 'DELETE' }, 5000);
+    if (!res.ok) {
+      const data = await res.json();
+      errorDiv.textContent = data.error || 'Error deleting post.';
+    } else {
+      fetchNotes();
+    }
+  } catch (e) {
+    errorDiv.textContent = e.message === 'Request timed out'
+      ? 'Server is not responding. Please try again later.'
+      : 'Network error. Please try again later.';
+  }
 };
 
 fetchNotes();
-
 </script>
 </body>
 </html>
