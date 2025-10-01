@@ -18,6 +18,7 @@ public class GeminiSmartService {
     private final EVChargingService evChargingService;
     private final ObjectMapper objectMapper;
 
+
     public GeminiSmartService(GeminiService geminiService,
                               WeatherService weatherService,
                               GoogleMapsRouteService googleMapsRouteService,

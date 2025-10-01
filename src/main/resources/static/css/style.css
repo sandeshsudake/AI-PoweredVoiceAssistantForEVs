@@ -253,5 +253,139 @@
           #responseDiv iframe{ width: 96vw; min-width: 0; height: 170px; }
 
         }
+        .broadcast-board {
+          margin-top: 2.5rem;
+          background: var(--container-bg);
+          border-radius: 20px;
+          box-shadow: 0 4px 24px #b3c6e7a8;
+          padding: 2.2rem 1.7rem 1.5rem 1.7rem;
+          max-width: 480px;
+          margin-left: auto;
+          margin-right: auto;
+          text-align: left;
+        }
 
+        .broadcast-board h3 {
+          margin-bottom: 1.3rem;
+          color: var(--text-subtle);
+          font-size: 1.4rem;
+          font-weight: 800;
+          letter-spacing: 1px;
+          text-align: center;
+        }
 
+        #broadcastForm {
+          display: flex;
+          gap: 0;
+          margin-bottom: 1.3rem;
+          background: #f7fbff;
+          border-radius: 12px;
+          box-shadow: 0 1px 4px #e3eefd3a;
+          overflow: hidden;
+          border: 1.5px solid #b3c6e7;
+        }
+
+        #broadcastForm input[type="text"] {
+          flex: 1;
+          padding: 14px 16px;
+          border: none;
+          font-size: 1.1rem;
+          background: transparent;
+          color: var(--text-main);
+          outline: none;
+          transition: background 0.2s;
+        }
+
+        #broadcastForm input[type="text"]:focus {
+          background: #eaf4ff;
+        }
+
+        #broadcastForm button {
+          padding: 0 28px;
+          border: none;
+          background: var(--btn-gradient);
+          color: #fff;
+          font-weight: 700;
+          font-size: 1.1rem;
+          cursor: pointer;
+          transition: background 0.3s, transform 0.1s;
+          box-shadow: 0 2px 8px #b3c6e7a8;
+          border-radius: 0 12px 12px 0;
+          height: 100%;
+          display: flex;
+          align-items: center;
+        }
+
+        #broadcastForm button:hover {
+          background: linear-gradient(135deg, #5ad0ff 0%, #4771e3 100%);
+          transform: translateY(-2px) scale(1.04);
+        }
+
+        #broadcastList {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .broadcast-note {
+          background: #f8fbff;
+          margin-bottom: 12px;
+          padding: 15px 18px;
+          border-radius: 12px;
+          box-shadow: 0 1px 6px #b3c6e7a8;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          word-break: break-word;
+          border-left: 4px solid var(--accent);
+          position: relative;
+          transition: box-shadow 0.2s;
+        }
+
+        .broadcast-note:not(:last-child)::after {
+          content: "";
+          display: block;
+          position: absolute;
+          left: 18px;
+          right: 18px;
+          bottom: -6px;
+          height: 1px;
+          background: #e3eefd;
+          opacity: 0.7;
+        }
+
+        .note-text {
+          color: var(--text-main);
+          font-size: 1.1rem;
+          flex: 1;
+          padding-right: 10px;
+        }
+
+        .delete-btn {
+          margin-left: 12px;
+          background: none;
+          border: none;
+          color: #e74c3c;
+          font-size: 1.25rem;
+          cursor: pointer;
+          transition: color 0.2s, background 0.2s;
+          padding: 4px 8px;
+          border-radius: 6px;
+        }
+
+        .delete-btn:hover,
+        .delete-btn:focus {
+          color: #c0392b;
+          background: #fbeaea;
+        }
+
+        @media (max-width: 600px) {
+          .broadcast-board {
+            padding: 1.1rem 0.5rem 1rem 0.5rem;
+            max-width: 98vw;
+          }
+          #broadcastForm button {
+            padding: 0 14px;
+            font-size: 1rem;
+          }
+        }
